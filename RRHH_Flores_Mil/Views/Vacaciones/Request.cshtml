@@ -1,0 +1,121 @@
+﻿@model Vacaciones
+@{
+    ViewData["Title"] = "Vacation Request";
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Modal con Barra de Progreso Animada</title>
+    <!-- Incluir Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Incluir jQuery (necesario para los scripts de Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Incluir Bootstrap JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- Incluir FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mt-5">
+            <div class="card-body">
+                <h3 class="card-title text-center">Solicitud</h3>
+                <form id="vacationForm" asp-action="Request" asp-controller="Vacaciones" method="post">
+                    <div class="form-group">
+                        <label asp-for="Nombre" class="control-label"></label>
+                        <input id="Nombre" asp-for="Nombre" class="form-control" readonly />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="SelectedOption">Tipo Solicitud</label>
+                        <select asp-for="SelectedOption" asp-items="Model.Tipo" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Sucursal" class="control-label"></label>
+                        <input id="Sucursal" asp-for="Sucursal" class="form-control" readonly />
+                        <span asp-validation-for="Sucursal" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="SelectJefeSucursal">Jefe Sucursal</label>
+                        <select asp-for="SelectJefeSucursal" asp-items="Model.JefeSucursal" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FechaContrato" class="control-label">Fecha Contrato</label>
+                        <input id="FechaCon" asp-for="FechaContrato" class="form-control" type="date" readonly />
+                        <span asp-validation-for="FechaContrato" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FechaInicio" class="control-label">Fecha Inicio</label>
+                        <input id="fechaIn" asp-for="FechaInicio" class="form-control" type="date" />
+                        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FechaFin" class="control-label">Fecha Fin</label>
+                        <input id="fechaFin" asp-for="FechaFin" class="form-control" type="date" />
+                        <span asp-validation-for="FechaFin" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="DiasPendiente" class="control-label"># Días Pendiente</label>
+                        <input id="DiasPen" asp-for="DiasPendiente" class="form-control" readonly />
+                        <span asp-validation-for="DiasPendiente" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Observación" class="control-label"></label>
+                        <textarea id="Obs" asp-for="Observación" class="form-control"></textarea>
+                        <span asp-validation-for="Observación" class="text-danger"></span>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn btn-outline-primary btn-block" data-toggle="modal" data-target="#progressModal">Solicitar</button>
+                </form></br>
+                <form asp-controller="Vacaciones" asp-action="Request" method="get">
+                    <button type="submit" class="btn btn-outline-secondary btn-block">Nueva solicitud</button>
+                </form>
+                @if (ViewData["Message"] != null)
+                {
+                    <div class="alert alert-success mt-3">@ViewData["Message"]</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="progressModalLabel">Generando Solicitud...</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- Aquí va la barra de progreso animada -->
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            if ($('.alert-success').length) {
+                $('#vacationForm')[0].reset();
+                document.getElementById('Nombre').value = '';
+                document.getElementById('Sucursal').value = '';
+                document.getElementById('FechaCon').value = '';
+                document.getElementById('DiasPen').value = '';
+                document.getElementById('Obs').value = '';
+            }
+        });
+    </script>
+}

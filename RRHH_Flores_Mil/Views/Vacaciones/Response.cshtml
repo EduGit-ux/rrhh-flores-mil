@@ -1,0 +1,128 @@
+﻿@model List<AprobarVacaciones>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrollable List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .scrollable-container {
+            max-height: 400px; /* Set a max height */
+            overflow-y: auto; /* Enable vertical scroll */
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script>
+        function copiarValor(id) {
+            var inputOrigen = document.getElementById('detalle_' + id);
+            var inputDestino = document.getElementById('inputDestino_' + id);
+            var inputDestino2 = document.getElementById('inputDestino2_' + id);
+            inputDestino.value = inputOrigen.value;
+            inputDestino2.value = inputOrigen.value;
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 style="text-align: center" class="alert alert-secondary card-subtitle mb-2 text-muted" role="alert">
+            <i class="fa fa-check-square-o" aria-hidden="true"></i>
+            Pendientes de Aprobación
+        </h2>
+        <form method="get" action="@Url.Action("Response", "Vacaciones")" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" name="searchString" placeholder="Buscar..." />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="submit">Buscar</button>
+                    <button class="btn btn-primary" type="submit">Limpiar</button>
+                </div>
+            </div>
+        </form>
+        @if (ViewData["Message"] != null)
+        {
+            <div class="alert alert-success mt-3">@ViewData["Message"]</div>
+        }
+        <div class="scrollable-container border p-3">
+            @if (Model.Count == 0)
+            {
+                <p>No hay solicitudes pendientes de aprobación.</p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Fecha de Inicio</th>
+                            <th>Fecha de Fin</th>
+                            <th>Estado</th>
+                            <th>Observación</th>
+                            <th></th> <!-- Columna para botón de aprobar -->
+                            <th></th> <!-- Columna para botón de rechazar -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var request in Model)
+                        {
+                            <tr>
+                                <td>@request.Nombre</td>
+                                <td>@request.FechaInicio.ToShortDateString()</td>
+                                <td>@request.FechaFin.ToShortDateString()</td>
+                                <td>@(request.Aprobado ? "Aprobada" : "Pendiente")</td>
+                                <td>
+                                    <input type="text" id="detalle_@request.Id" placeholder="Observación" class="form-control" />
+                                </td>
+                                <td>
+                                    @if (!request.Aprobado)
+                                    {
+                                        <form method="post" action="@Url.Action("Approve", "Vacaciones")">
+                                            <input type="hidden" name="id" value="@request.Id" />
+                                            <input type="hidden" id="inputDestino_@request.Id" name="observacion" />
+                                            <button data-toggle="modal" data-target="#progressModal" type="submit" onclick="copiarValor('@request.Id')" class="btn btn-success">Aprobar</button>
+                                        </form>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!request.Aprobado)
+                                    {
+                                        <form method="post" action="@Url.Action("Reject", "Vacaciones")">
+                                            <input type="hidden" name="id" value="@request.Id" />
+                                            <input type="hidden" id="inputDestino2_@request.Id" name="observacion" />
+                                            <button data-toggle="modal" data-target="#progressModal" type="submit" onclick="copiarValor('@request.Id')" class="btn btn-danger">Rechazar</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="progressModalLabel">Generando Solicitud...</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
